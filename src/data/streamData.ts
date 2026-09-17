@@ -1,7 +1,7 @@
-import alexBanner from '../assets/images/alex_eve_stream_1789653919210.jpg';
-import alexAvatar from '../assets/images/alex_streamer_1789653882087.jpg';
-import eveAvatar from '../assets/images/eve_streamer_1789653901167.jpg';
-import duoAvatar from '../assets/images/duo_channel_avatar_1789653933015.jpg';
+import alexBanner from '../assets/images/brave_tEDnRfXraY.png';
+import alexAvatar from '../assets/images/alex_avatar_crop.png';
+import eveAvatar from '../assets/images/eve_avatar_crop.png';
+import duoAvatar from '../assets/images/duo_avatar_crop.png';
 import { StreamInfo, StreamerBio, HighlightClip, ScheduleDay, SocialChannel, ChatMessage } from '../types';
 
 export { alexBanner, alexAvatar, eveAvatar, duoAvatar };

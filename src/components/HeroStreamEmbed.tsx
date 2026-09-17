@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, Pause, Volume2, VolumeX, Maximize2, Share2, 
   Sparkles, Users, Clock, Gamepad2, Radio, Send, Smile, 
-  Gift, Heart, Shield, Check, MessageSquare, Flame, Trophy
+  Gift, Heart, Shield, Check, MessageSquare, Flame, Trophy,
+  Camera, RotateCcw, Upload
 } from 'lucide-react';
 import { StreamInfo, ChatMessage } from '../types';
 import { INITIAL_CHAT_MESSAGES } from '../data/streamData';
@@ -39,9 +40,41 @@ export const HeroStreamEmbed: React.FC<HeroStreamEmbedProps> = ({
   const [recentAlert, setRecentAlert] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showSubModal, setShowSubModal] = useState(false);
+  const [customStreamPhoto, setCustomStreamPhoto] = useState<string | null>(null);
 
   const streamContainerRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        if (result) {
+          setCustomStreamPhoto(result);
+          try {
+            localStorage.setItem('alexandeve_custom_stream_photo', result);
+          } catch (err) {
+            console.warn('Could not save to localStorage', err);
+          }
+          soundEffects.playVictory();
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleResetPhoto = () => {
+    setCustomStreamPhoto(null);
+    try {
+      localStorage.removeItem('alexandeve_custom_stream_photo');
+    } catch {
+      // ignore
+    }
+    soundEffects.playChatBlip();
+  };
 
   // Uptime and viewer count live tick
   useEffect(() => {
@@ -200,6 +233,32 @@ export const HeroStreamEmbed: React.FC<HeroStreamEmbedProps> = ({
               </button>
             </div>
 
+            {/* Custom Photo Upload Trigger */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handlePhotoUpload}
+              accept="image/*"
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="px-2.5 py-1.5 rounded-xl border border-[#27293e] bg-[#151724] hover:bg-[#202235] text-white transition-all text-xs flex items-center gap-1.5 font-medium hover:border-[#9146FF]/50"
+              title="Upload exact original photo from your device"
+            >
+              <Camera className="w-3.5 h-3.5 text-[#00f2fe]" />
+              <span className="hidden sm:inline">{customStreamPhoto ? 'Change Photo' : 'Upload Main Photo'}</span>
+            </button>
+            {customStreamPhoto && (
+              <button
+                onClick={handleResetPhoto}
+                className="p-1.5 rounded-xl border border-[#27293e] bg-[#151724] hover:bg-red-500/20 text-[#8e90a6] hover:text-red-400 transition-all text-xs"
+                title="Reset to default stream photo"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            )}
+
             <button
               onClick={() => setShowChat(!showChat)}
               className={`p-2 rounded-xl border transition-all text-xs flex items-center gap-1.5 font-medium ${
@@ -246,7 +305,7 @@ export const HeroStreamEmbed: React.FC<HeroStreamEmbedProps> = ({
                 <div className="relative w-full h-full bg-[#0a0b12] overflow-hidden group">
                   {/* Stream Main Broadcast Feed */}
                   <img
-                    src={alexBanner}
+                    src={customStreamPhoto || alexBanner}
                     alt="Alex and Eve Live Stream Broadcast"
                     className="w-full h-full object-cover select-none transition-transform duration-700 group-hover:scale-[1.01]"
                   />
@@ -337,6 +396,14 @@ export const HeroStreamEmbed: React.FC<HeroStreamEmbedProps> = ({
                       >
                         <Gift className="w-3.5 h-3.5" />
                         <span>Subscribe</span>
+                      </button>
+
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="p-2 bg-white/10 hover:bg-[#9146FF] rounded-lg text-white transition-colors"
+                        title={customStreamPhoto ? 'Change Photo (Upload custom file)' : 'Upload exact photo from device'}
+                      >
+                        <Camera className="w-4 h-4" />
                       </button>
 
                       <button
