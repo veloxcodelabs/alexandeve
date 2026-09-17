@@ -1,0 +1,6 @@
+{
+  "name": "Alex & Eve | Twitch Streaming Duo",
+  "description": "Official website for Twitch streaming duo AlexAndEve (twitch.tv/alexandeve). Watch live streams, browse highlight clips, check stream schedules, and explore duo bios and social channels.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
